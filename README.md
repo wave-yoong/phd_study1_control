@@ -80,6 +80,11 @@ The application will be available at http://localhost:5000
 4. Receive immediate response from GPT
 5. All messages are automatically saved to the database
 
+## Security Notes
+- **Debug Mode**: By default, debug mode is disabled. Set `FLASK_DEBUG=True` in `.env` only for development
+- **Production**: For production deployment, use a WSGI server like Gunicorn instead of the Flask development server
+- **API Key**: Keep your `.env` file secure and never commit it to version control
+
 ## Notes
 - This is the control group implementation with direct response functionality
 - No confirmation or intermediate steps - messages get immediate responses
