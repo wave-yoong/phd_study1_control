@@ -12,7 +12,9 @@ class GPTService:
         if not api_key:
             raise ValueError("OPENAI_API_KEY not found in environment variables")
         self.client = OpenAI(api_key=api_key)
-        self.model = "gpt-3.5-turbo"
+        # Using gpt-3.5-turbo for cost-effectiveness in control group study
+        # Can be overridden via OPENAI_MODEL environment variable
+        self.model = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
     
     def get_response(self, user_message, conversation_history=None):
         """

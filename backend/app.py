@@ -64,11 +64,12 @@ def chat():
         # Save user message to database
         db_manager.save_message(conversation_id, 'user', user_message)
         
-        # Get conversation history for context
+        # Get conversation history for context (excluding the just-added user message)
         history_rows = db_manager.get_conversation_messages(conversation_id)
+        # Build conversation history from all messages except the last one (the current user message)
         conversation_history = [
             {"role": role, "content": content}
-            for role, content, timestamp in history_rows[:-1]  # Exclude the just-added message
+            for role, content, timestamp in history_rows[:-1]
         ]
         
         # Get GPT response immediately
