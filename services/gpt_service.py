@@ -1,5 +1,5 @@
 import os
-from openai import OpenAI
+from openai import AzureOpenAI
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -8,13 +8,28 @@ load_dotenv()
 
 class GPTService:
     def __init__(self):
-        api_key = os.getenv('OPENAI_API_KEY')
+        # Azure OpenAI configuration
+        api_key = os.getenv('AZURE_OPENAI_API_KEY')
+        endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
+        api_version = os.getenv('AZURE_OPENAI_API_VERSION', '2025-01-01-preview')
+        
         if not api_key:
-            raise ValueError("OPENAI_API_KEY not found in environment variables")
-        self.client = OpenAI(api_key=api_key)
-        # Using gpt-3.5-turbo for cost-effectiveness in control group study
-        # Can be overridden via OPENAI_MODEL environment variable
-        self.model = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
+            raise ValueError("AZURE_OPENAI_API_KEY not found in environment variables")
+        if not endpoint:
+            raise ValueError("AZURE_OPENAI_ENDPOINT not found in environment variables")
+        
+        # Extract base URL from endpoint (remove the deployment-specific path)
+        # Endpoint format: https://{resource}.openai.azure.com/openai/deployments/{deployment}/...
+        base_url = endpoint.split('/openai/deployments')[0]
+        
+        self.client = AzureOpenAI(
+            api_key=api_key,
+            azure_endpoint=base_url,
+            api_version=api_version
+        )
+        
+        # Use Azure deployment name instead of model name
+        self.model = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME', 'gpt-4o-mini')
     
     def get_response(self, user_message, conversation_history=None):
         """
